@@ -1,2 +1,0 @@
-# foxof-website
-Foxof Website
