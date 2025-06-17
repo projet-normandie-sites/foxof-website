@@ -1,7 +1,6 @@
-// src/components/auth/ResetPasswordForm.vue
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,11 +12,10 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Lock, AlertCircle, Eye, EyeOff } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import Spinner from '@/components/ui/Spinner.vue'
 import forgotPasswordService from '@/services/forgot-password.service'
 import toastService from '@/services/toast.service'
-import type { ApiError } from '@/types';
+import type { ApiError } from '@/types'
 
 /**
  * ResetPasswordForm component using Shadcn Card UI
@@ -32,7 +30,6 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const router = useRouter()
 const route = useRoute()
-const { t } = useI18n()
 
 /**
  * Extract token from URL
@@ -56,7 +53,7 @@ const toggleConfirmPasswordVisibility = () => {
 }
 
 /**
- * Validate password length
+ * Validate password length (minimum 8 characters)
  */
 const isPasswordValid = computed(() => {
   if (!password.value) return true
@@ -87,18 +84,18 @@ const isFormValid = computed(() => {
  */
 const handleSubmit = async () => {
   if (!token.value) {
-    error.value = t('auth.resetPassword.error.tokenRequired')
-    toastService.error(t('auth.resetPassword.error.title'), error.value)
+    error.value = 'Token de réinitialisation requis dans l\'URL'
+    toastService.error('Erreur', error.value)
     return
   }
 
   if (!isFormValid.value) {
     if (!password.value) {
-      error.value = t('auth.resetPassword.validation.passwordRequired')
+      error.value = 'Le mot de passe est requis'
     } else if (!isPasswordValid.value) {
-      error.value = t('auth.resetPassword.validation.passwordLength')
+      error.value = 'Le mot de passe doit contenir au moins 8 caractères'
     } else if (!doPasswordsMatch.value) {
-      error.value = t('auth.resetPassword.validation.passwordMatch')
+      error.value = 'Les mots de passe ne correspondent pas'
     }
     return
   }
@@ -114,20 +111,20 @@ const handleSubmit = async () => {
 
     // Show success notification
     toastService.success(
-        t('auth.resetPassword.success.title'),
-        t('auth.resetPassword.success.description')
+        'Mot de passe réinitialisé',
+        'Votre mot de passe a été modifié avec succès ! Vous pouvez maintenant vous connecter.'
     )
 
     // Redirect to login
     router.push('/login')
 
   } catch (err: unknown) {
-    const apiError = err as ApiError;
-    error.value = apiError.response?.data?.message || t('auth.resetPassword.error.default')
+    const apiError = err as ApiError
+    error.value = apiError.response?.data?.message || 'Une erreur est survenue lors de la réinitialisation du mot de passe'
 
     // Show error notification
     toastService.error(
-        t('auth.resetPassword.error.title'),
+        'Erreur de réinitialisation',
         error.value
     )
   } finally {
@@ -139,9 +136,11 @@ const handleSubmit = async () => {
 <template>
   <Card class="w-full max-w-md mx-auto">
     <CardHeader>
-      <CardTitle class="text-2xl font-bold text-center">{{ t('auth.resetPassword.title') }}</CardTitle>
+      <CardTitle class="text-2xl font-bold text-center">
+        Nouveau mot de passe
+      </CardTitle>
       <CardDescription class="text-center">
-        {{ t('auth.resetPassword.subtitle') }}
+        Choisissez un nouveau mot de passe sécurisé pour votre compte
       </CardDescription>
     </CardHeader>
 
@@ -156,12 +155,14 @@ const handleSubmit = async () => {
         <!-- Token error -->
         <div v-if="!token" class="p-3 bg-red-50 text-red-700 rounded-md flex items-center gap-2">
           <AlertCircle class="h-5 w-5" />
-          <span>{{ t('auth.resetPassword.error.tokenRequired') }}</span>
+          <span>Token de réinitialisation manquant ou invalide dans l'URL</span>
         </div>
 
         <!-- New Password field -->
         <div class="space-y-2">
-          <label for="password" class="text-sm font-medium">{{ t('auth.resetPassword.newPassword') }}</label>
+          <label for="password" class="text-sm font-medium">
+            Nouveau mot de passe <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Lock class="h-5 w-5" />
@@ -170,10 +171,11 @@ const handleSubmit = async () => {
                 id="password"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="password"
-                :placeholder="t('auth.resetPassword.enterNewPassword')"
+                placeholder="Entrez votre nouveau mot de passe"
                 class="pl-10"
                 :disabled="loading || !token"
                 :class="{ 'border-red-500': password && !isPasswordValid }"
+                autocomplete="new-password"
                 required
             />
             <button
@@ -186,13 +188,18 @@ const handleSubmit = async () => {
             </button>
           </div>
           <p v-if="password && !isPasswordValid" class="text-sm text-red-500">
-            {{ t('auth.resetPassword.validation.passwordLength') }}
+            Le mot de passe doit contenir au moins 8 caractères
+          </p>
+          <p class="text-xs text-muted-foreground">
+            Choisissez un mot de passe sécurisé avec au moins 8 caractères
           </p>
         </div>
 
         <!-- Confirm Password field -->
         <div class="space-y-2">
-          <label for="confirmPassword" class="text-sm font-medium">{{ t('auth.resetPassword.confirmPassword') }}</label>
+          <label for="confirmPassword" class="text-sm font-medium">
+            Confirmer le nouveau mot de passe <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Lock class="h-5 w-5" />
@@ -201,10 +208,11 @@ const handleSubmit = async () => {
                 id="confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 v-model="confirmPassword"
-                :placeholder="t('auth.resetPassword.enterConfirmPassword')"
+                placeholder="Confirmez votre nouveau mot de passe"
                 class="pl-10"
                 :disabled="loading || !token"
                 :class="{ 'border-red-500': confirmPassword && !doPasswordsMatch }"
+                autocomplete="new-password"
                 required
             />
             <button
@@ -217,7 +225,7 @@ const handleSubmit = async () => {
             </button>
           </div>
           <p v-if="confirmPassword && !doPasswordsMatch" class="text-sm text-red-500">
-            {{ t('auth.resetPassword.validation.passwordMatch') }}
+            Les mots de passe ne correspondent pas
           </p>
         </div>
 
@@ -229,10 +237,10 @@ const handleSubmit = async () => {
         >
           <template v-if="loading">
             <Spinner color="text-white" size="md" :mr="true" />
-            {{ t('auth.resetPassword.resetting') }}
+            Réinitialisation en cours...
           </template>
           <template v-else>
-            {{ t('auth.resetPassword.resetButton') }}
+            Réinitialiser le mot de passe
           </template>
         </Button>
       </form>
@@ -240,7 +248,7 @@ const handleSubmit = async () => {
 
     <CardFooter class="flex justify-center">
       <RouterLink to="/login" class="text-primary hover:underline text-sm">
-        {{ t('auth.forgotPassword.backToLogin') }}
+        Retour à la connexion
       </RouterLink>
     </CardFooter>
   </Card>

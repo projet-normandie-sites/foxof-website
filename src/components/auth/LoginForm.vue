@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/card'
 import { useAuthStore } from '@/stores/auth'
 import { Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import Spinner from '@/components/ui/Spinner.vue'
 
 /**
@@ -25,7 +24,6 @@ const password = ref('')
 const showPassword = ref(false)
 const authStore = useAuthStore()
 const router = useRouter()
-const { t } = useI18n()
 
 /**
  * Toggle password visibility between plain text and hidden
@@ -51,9 +49,11 @@ const handleLogin = async () => {
 <template>
   <Card class="w-full max-w-md mx-auto">
     <CardHeader>
-      <CardTitle class="text-2xl font-bold text-center">{{ t('auth.login.title') }}</CardTitle>
+      <CardTitle class="text-2xl font-bold text-center">
+        Connexion
+      </CardTitle>
       <CardDescription class="text-center">
-        {{ t('auth.login.subtitle') }}
+        Connectez-vous à votre compte pour continuer
       </CardDescription>
     </CardHeader>
 
@@ -67,7 +67,9 @@ const handleLogin = async () => {
 
         <!-- Username field -->
         <div class="space-y-2">
-          <label for="username" class="text-sm font-medium">{{ t('auth.login.username') }}</label>
+          <label for="username" class="text-sm font-medium">
+            Nom d'utilisateur
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <User class="h-5 w-5" />
@@ -75,16 +77,19 @@ const handleLogin = async () => {
             <Input
                 id="username"
                 v-model="username"
-                :placeholder="t('auth.login.enterUsername')"
+                placeholder="Entrez votre nom d'utilisateur"
                 class="pl-10"
                 :disabled="authStore.isLoading"
+                autocomplete="username"
             />
           </div>
         </div>
 
         <!-- Password field -->
         <div class="space-y-2">
-          <label for="password" class="text-sm font-medium">{{ t('auth.login.password') }}</label>
+          <label for="password" class="text-sm font-medium">
+            Mot de passe
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Lock class="h-5 w-5" />
@@ -93,9 +98,10 @@ const handleLogin = async () => {
                 id="password"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="password"
-                :placeholder="t('auth.login.enterPassword')"
+                placeholder="Entrez votre mot de passe"
                 class="pl-10"
                 :disabled="authStore.isLoading"
+                autocomplete="current-password"
             />
             <button
                 type="button"
@@ -116,10 +122,10 @@ const handleLogin = async () => {
         >
           <template v-if="authStore.isLoading">
             <Spinner color="text-white" size="md" :mr="true" />
-            {{ t('auth.login.loginInProgress') }}
+            Connexion en cours...
           </template>
           <template v-else>
-            {{ t('auth.login.loginButton') }}
+            Se connecter
           </template>
         </Button>
       </form>
@@ -127,14 +133,14 @@ const handleLogin = async () => {
 
     <CardFooter class="flex flex-col space-y-4">
       <RouterLink to="/forgot-password" class="text-primary text-sm hover:underline">
-        {{ t('auth.login.forgotPassword') }}
+        Mot de passe oublié ?
       </RouterLink>
 
       <div class="w-full border-t pt-4">
         <p class="text-sm text-center text-muted-foreground">
-          {{ t('auth.login.noAccount') }}
+          Vous n'avez pas de compte ?
           <RouterLink to="/register" class="text-primary hover:underline ml-1">
-            {{ t('auth.login.registerLink') }}
+            S'inscrire
           </RouterLink>
         </p>
       </div>

@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import * as authUtils from '@/utils/auth.utils';
-import { useI18n } from '@/i18n';
-
-const { t } = useI18n();
+import { computed } from 'vue'
+import * as authUtils from '@/utils/auth.utils'
 
 const props = defineProps({
   requiredRole: {
@@ -22,25 +19,27 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
-});
+})
 
-// Check if user has the necessary permissions
+/**
+ * Check if user has the necessary permissions
+ */
 const hasPermission = computed(() => {
   // If a specific role is required
   if (props.requiredRole) {
-    return authUtils.hasRole(props.requiredRole);
+    return authUtils.hasRole(props.requiredRole)
   }
 
   // If multiple roles are required
   if (props.requiredRoles.length > 0) {
     return props.requireAll
         ? authUtils.hasAllRoles(props.requiredRoles)
-        : authUtils.hasAnyRole(props.requiredRoles);
+        : authUtils.hasAnyRole(props.requiredRoles)
   }
 
   // By default, consider authentication is sufficient
-  return authUtils.isAuthenticated();
-});
+  return authUtils.isAuthenticated()
+})
 </script>
 
 <template>
@@ -54,7 +53,7 @@ const hasPermission = computed(() => {
     <template v-else-if="fallbackContent">
       <slot name="fallback">
         <div class="p-4 bg-gray-50 rounded-md text-gray-500 text-sm border border-gray-200">
-          {{ t('common.noPermission') }}
+          Vous n'avez pas les permissions nécessaires pour voir ce contenu
         </div>
       </slot>
     </template>

@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { QuillEditor } from '@/components/ui/editor'
 import { toolbarConfigs } from '@/components/ui/editor'
-import { useI18n } from '@/i18n'
 import { MessageSquare, User, Calendar, MoreVertical, Pencil, AlertCircle } from 'lucide-vue-next'
 import commentService, { type Comment } from '@/services/comment.service'
 import toastService from '@/services/toast.service'
@@ -42,13 +41,12 @@ const isEditContentValid = computed(() => {
 
 // Get auth store to check if user is logged in and compare with comment author
 const authStore = useAuthStore()
-const { t, locale } = useI18n()
 
 /**
  * Format date for display based on locale
  */
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -85,8 +83,8 @@ const loadComments = async (page = 1, forceReload = false) => {
     commentsLoaded.value = true;
   } catch (err: unknown) {
     const apiError = err as ApiError;
-    error.value = apiError.response?.data?.message || t('comments.error.loadFailed');
-    toastService.error(t('comments.error.title'), error.value);
+    error.value = apiError.response?.data?.message || 'Échec du chargement des commentaires.';
+    toastService.error('Erreur', error.value);
   } finally {
     loading.value = false;
   }
@@ -156,8 +154,8 @@ const saveComment = async (commentId: number) => {
 
   if (!comment || !isCommentAuthor(comment)) {
     toastService.error(
-        t('comments.error.title'),
-        t('comments.error.notAuthorized')
+        'Erreur',
+        'Vous n\'êtes pas autorisé à modifier ce commentaire.'
     )
     editingCommentId.value = null
     return
@@ -175,15 +173,15 @@ const saveComment = async (commentId: number) => {
       comments.value[index].updatedAt = new Date().toISOString()
     }
 
-    toastService.success(t('comments.success.title'), t('comments.success.updated'))
+    toastService.success('Succès', 'Votre commentaire a été mis à jour.')
 
     // Exit edit mode
     editingCommentId.value = null
     editContent.value = ''
   } catch (err: unknown) {
     const apiError = err as ApiError
-    const errorMsg = apiError.response?.data?.message || t('comments.error.updateFailed')
-    toastService.error(t('comments.error.title'), errorMsg)
+    const errorMsg = apiError.response?.data?.message || 'Échec de la mise à jour du commentaire.'
+    toastService.error('Erreur', errorMsg)
   } finally {
     loading.value = false
   }
@@ -223,7 +221,7 @@ defineExpose({
     <div class="flex items-center gap-2">
       <MessageSquare class="h-5 w-5" />
       <h3 class="text-lg font-medium">
-        {{ t('comments.title') }} ({{ totalItems }})
+        Commentaires ({{ totalItems }})
       </h3>
     </div>
 
@@ -241,7 +239,7 @@ defineExpose({
     <!-- Empty state -->
     <div v-else-if="!comments.length" class="text-center py-8 text-muted-foreground">
       <MessageSquare class="h-12 w-12 mx-auto mb-2 opacity-20" />
-      <p>{{ t('comments.empty') }}</p>
+      <p>Soyez le premier à partager votre avis !</p>
     </div>
 
     <!-- Comments list -->
@@ -261,7 +259,7 @@ defineExpose({
                   <time :datetime="comment.createdAt">{{ formatDate(comment.createdAt) }}</time>
                   <template v-if="comment.updatedAt">
                     <span class="px-1">•</span>
-                    <span>{{ t('comments.edited') }}</span>
+                    <span>modifié</span>
                   </template>
                 </div>
               </div>
@@ -289,7 +287,7 @@ defineExpose({
                       class="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100"
                   >
                     <Pencil class="h-4 w-4" />
-                    {{ t('comments.actions.edit') }}
+                    Modifier
                   </button>
                 </div>
               </div>
@@ -301,7 +299,7 @@ defineExpose({
             <div class="edit-mode-wrapper">
               <QuillEditor
                   v-model="editContent"
-                  :placeholder="t('comments.form.placeholder')"
+                  placeholder="Partagez votre avis sur cet article..."
                   :toolbar="toolbarConfigs.basic"
                   height="150px"
                   class="w-full"
@@ -314,7 +312,7 @@ defineExpose({
                   @click="cancelEditing"
                   class="btn"
               >
-                {{ t('comments.actions.cancel') }}
+                Annuler
               </Button>
               <Button
                   size="sm"
@@ -323,7 +321,7 @@ defineExpose({
                   class="btn"
               >
                 <Spinner v-if="loading" color="text-white" size="sm" :mr="true" />
-                {{ t('comments.actions.save') }}
+                Enregistrer les modifications
               </Button>
             </div>
           </div>
@@ -344,7 +342,7 @@ defineExpose({
             class="gap-2"
         >
           <Spinner v-if="loading" color="text-primary" size="sm" :mr="false" />
-          {{ t('comments.loadMore') }}
+          Charger plus de commentaires
         </Button>
       </div>
     </div>

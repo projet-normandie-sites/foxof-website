@@ -1,57 +1,54 @@
 <script setup lang="ts">
-import { Menu, User, LogIn } from "lucide-vue-next";
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import LanguageSelector from '@/components/common/LanguageSelector.vue';
-import { useI18n } from '@/i18n';
-import ThemeSwitcher from "@/components/common/ThemeSwitcher.vue";
-import UserAvatar from '@/components/user/UserAvatar.vue';
+import { Menu, User, LogIn } from "lucide-vue-next"
+import { ref, onMounted, computed } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { SidebarTrigger } from '@/components/ui/sidebar'
+import ThemeSwitcher from "@/components/common/ThemeSwitcher.vue"
+import UserAvatar from '@/components/user/UserAvatar.vue'
 
-const authStore = useAuthStore();
-const router = useRouter();
-const { t } = useI18n();
-const showDropdown = ref(false);
+const authStore = useAuthStore()
+const router = useRouter()
+const showDropdown = ref(false)
 
 // Toggle the user dropdown menu
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 
 // Close dropdown when clicking outside
 const closeDropdown = (_e: MouseEvent) => {
   if (showDropdown.value) {
-    showDropdown.value = false;
+    showDropdown.value = false
   }
-};
+}
 
 // Handle logout action
 const handleLogout = async () => {
-  await authStore.logout();
-  router.push('/login');
-  showDropdown.value = false;
-};
+  await authStore.logout()
+  router.push('/login')
+  showDropdown.value = false
+}
 
 // User display name
 const userDisplayName = computed(() => {
-  return authStore.user?.username || 'Guest';
-});
+  return authStore.user?.username || 'Invité'
+})
 
 // User email or ID
 const userSubtitle = computed(() => {
-  return authStore.user?.slug || 'm@example.com';
-});
+  return authStore.user?.slug || 'utilisateur@exemple.com'
+})
 
 // Check if user is authenticated
 const isAuthenticated = computed(() => {
-  return authStore.isAuthenticated;
-});
+  return authStore.isAuthenticated
+})
 
 // Setup click outside listener
 onMounted(() => {
-  document.addEventListener('click', closeDropdown);
-});
+  document.addEventListener('click', closeDropdown)
+})
 </script>
 
 <template>
@@ -62,12 +59,11 @@ onMounted(() => {
 
     <div class="flex flex-1 items-center justify-between">
       <div class="flex items-center gap-2">
-        <h1 class="font-semibold text-lg">{{ t('app.name') }}</h1>
+        <h1 class="font-semibold text-lg">Foxof</h1>
       </div>
 
       <div class="flex items-center gap-2">
-
-        <!-- Language Selector -->
+        <!-- Theme Switcher -->
         <ThemeSwitcher />
 
         <!-- Login link when user is not authenticated -->
@@ -77,7 +73,7 @@ onMounted(() => {
             class="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
         >
           <LogIn class="h-5 w-5" />
-          <span class="hidden sm:inline">{{ t('layout.header.login') }}</span>
+          <span class="hidden sm:inline">Connexion</span>
         </RouterLink>
 
         <!-- User avatar only when authenticated -->
@@ -110,7 +106,7 @@ onMounted(() => {
                     @click="showDropdown = false"
                 >
                   <User class="h-4 w-4" />
-                  <span>{{ t('layout.header.profile') }}</span>
+                  <span>Profil</span>
                   <span class="ml-auto text-xs text-muted-foreground">⌘P</span>
                 </RouterLink>
 
@@ -119,7 +115,7 @@ onMounted(() => {
                     class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                     @click="showDropdown = false"
                 >
-                  <span>{{ t('layout.header.settings') }}</span>
+                  <span>Paramètres</span>
                   <span class="ml-auto text-xs text-muted-foreground">⌘S</span>
                 </RouterLink>
               </div>
@@ -129,7 +125,7 @@ onMounted(() => {
                     @click="handleLogout"
                     class="flex w-full items-center gap-2 px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-left"
                 >
-                  <span>{{ t('layout.header.logout') }}</span>
+                  <span>Déconnexion</span>
                   <span class="ml-auto text-xs text-muted-foreground">⌘⇧Q</span>
                 </button>
               </div>

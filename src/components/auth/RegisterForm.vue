@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,11 +12,10 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Lock, Mail, User, AlertCircle, Eye, EyeOff } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import Spinner from '@/components/ui/Spinner.vue'
 import useRegisterService from '@/services/register.service'
 import toastService from '@/services/toast.service'
-import type {ApiError} from "@/types";
+import type { ApiError } from "@/types"
 
 /**
  * RegisterForm component using Shadcn Card UI
@@ -33,7 +32,6 @@ const showConfirmPassword = ref(false)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const router = useRouter()
-const { t } = useI18n()
 const registerService = useRegisterService()
 
 /**
@@ -121,19 +119,19 @@ const handleRegister = async () => {
 
     // Show success notification
     toastService.success(
-        t('auth.register.success.title'),
-        t('auth.register.success.description')
+        'Inscription réussie',
+        'Votre compte a été créé avec succès ! Vous pouvez maintenant vous connecter.'
     )
 
     // Redirect to login page
     router.push('/login')
   } catch (err: unknown) {
-    const apiError = err as ApiError;
-    error.value = apiError.response?.data?.message || t('auth.register.error.default')
+    const apiError = err as ApiError
+    error.value = apiError.response?.data?.message || 'Une erreur est survenue lors de l\'inscription'
 
     // Show error notification
     toastService.error(
-        t('auth.register.error.title'),
+        'Erreur d\'inscription',
         error.value
     )
   } finally {
@@ -145,9 +143,11 @@ const handleRegister = async () => {
 <template>
   <Card class="w-full max-w-md mx-auto">
     <CardHeader>
-      <CardTitle class="text-2xl font-bold text-center">{{ t('auth.register.title') }}</CardTitle>
+      <CardTitle class="text-2xl font-bold text-center">
+        Créer un compte
+      </CardTitle>
       <CardDescription class="text-center">
-        {{ t('auth.register.subtitle') }}
+        Inscrivez-vous pour commencer votre aventure
       </CardDescription>
     </CardHeader>
 
@@ -161,7 +161,9 @@ const handleRegister = async () => {
 
         <!-- Email field -->
         <div class="space-y-2">
-          <label for="email" class="text-sm font-medium">{{ t('auth.register.email') }} *</label>
+          <label for="email" class="text-sm font-medium">
+            Adresse email <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Mail class="h-5 w-5" />
@@ -170,21 +172,24 @@ const handleRegister = async () => {
                 id="email"
                 type="email"
                 v-model="email"
-                :placeholder="t('auth.register.enterEmail')"
+                placeholder="Entrez votre adresse email"
                 class="pl-10"
                 :disabled="loading"
                 :class="{ 'border-red-500': email && !isEmailValid }"
+                autocomplete="email"
                 required
             />
           </div>
           <p v-if="email && !isEmailValid" class="text-sm text-red-500">
-            {{ t('auth.register.validation.email') }}
+            Veuillez entrer une adresse email valide
           </p>
         </div>
 
         <!-- Username field -->
         <div class="space-y-2">
-          <label for="username" class="text-sm font-medium">{{ t('auth.register.username') }} *</label>
+          <label for="username" class="text-sm font-medium">
+            Nom d'utilisateur <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <User class="h-5 w-5" />
@@ -192,21 +197,24 @@ const handleRegister = async () => {
             <Input
                 id="username"
                 v-model="username"
-                :placeholder="t('auth.register.enterUsername')"
+                placeholder="Choisissez un nom d'utilisateur"
                 class="pl-10"
                 :disabled="loading"
                 :class="{ 'border-red-500': username && !isUsernameValid }"
+                autocomplete="username"
                 required
             />
           </div>
           <p v-if="username && !isUsernameValid" class="text-sm text-red-500">
-            {{ t('auth.register.validation.username') }}
+            Le nom d'utilisateur doit contenir entre 3 et 20 caractères (lettres, chiffres et _ uniquement)
           </p>
         </div>
 
         <!-- Password field -->
         <div class="space-y-2">
-          <label for="password" class="text-sm font-medium">{{ t('auth.register.password') }} *</label>
+          <label for="password" class="text-sm font-medium">
+            Mot de passe <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Lock class="h-5 w-5" />
@@ -215,10 +223,11 @@ const handleRegister = async () => {
                 id="password"
                 :type="showPassword ? 'text' : 'password'"
                 v-model="password"
-                :placeholder="t('auth.register.enterPassword')"
+                placeholder="Créez un mot de passe sécurisé"
                 class="pl-10"
                 :disabled="loading"
                 :class="{ 'border-red-500': password && !isPasswordValid }"
+                autocomplete="new-password"
                 required
             />
             <button
@@ -231,13 +240,15 @@ const handleRegister = async () => {
             </button>
           </div>
           <p v-if="password && !isPasswordValid" class="text-sm text-red-500">
-            {{ t('auth.register.validation.password') }}
+            Le mot de passe doit contenir au moins 8 caractères, incluant au moins une lettre et un chiffre
           </p>
         </div>
 
         <!-- Confirm Password field -->
         <div class="space-y-2">
-          <label for="confirmPassword" class="text-sm font-medium">{{ t('auth.register.confirmPassword') }} *</label>
+          <label for="confirmPassword" class="text-sm font-medium">
+            Confirmer le mot de passe <span class="text-red-500">*</span>
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Lock class="h-5 w-5" />
@@ -246,10 +257,11 @@ const handleRegister = async () => {
                 id="confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 v-model="confirmPassword"
-                :placeholder="t('auth.register.enterConfirmPassword')"
+                placeholder="Confirmez votre mot de passe"
                 class="pl-10"
                 :disabled="loading"
                 :class="{ 'border-red-500': confirmPassword && !doPasswordsMatch }"
+                autocomplete="new-password"
                 required
             />
             <button
@@ -262,11 +274,9 @@ const handleRegister = async () => {
             </button>
           </div>
           <p v-if="confirmPassword && !doPasswordsMatch" class="text-sm text-red-500">
-            {{ t('auth.register.validation.passwordMatch') }}
+            Les mots de passe ne correspondent pas
           </p>
         </div>
-
-
 
         <!-- Register button -->
         <Button
@@ -276,10 +286,10 @@ const handleRegister = async () => {
         >
           <template v-if="loading">
             <Spinner color="text-white" size="md" :mr="true" />
-            {{ t('auth.register.registerInProgress') }}
+            Inscription en cours...
           </template>
           <template v-else>
-            {{ t('auth.register.registerButton') }}
+            Créer mon compte
           </template>
         </Button>
       </form>
@@ -287,9 +297,9 @@ const handleRegister = async () => {
 
     <CardFooter class="flex justify-center">
       <p class="text-sm text-muted-foreground">
-        {{ t('auth.register.alreadyHaveAccount') }}
-        <RouterLink to="/login" class="text-primary hover:underline">
-          {{ t('auth.register.loginLink') }}
+        Déjà un compte ?
+        <RouterLink to="/login" class="text-primary hover:underline ml-1">
+          Se connecter
         </RouterLink>
       </p>
     </CardFooter>

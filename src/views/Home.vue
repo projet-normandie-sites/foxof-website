@@ -3,10 +3,10 @@
     <!-- Header section -->
     <div class="text-center space-y-4">
       <h1 class="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-        {{ t('home.welcome') }}
+        Bienvenue sur votre application
       </h1>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        {{ t('home.description') }}
+        Un layout responsive avec sidebar, header et footer utilisant Shadcn/Vue et Tailwind CSS.
       </p>
     </div>
 
@@ -17,12 +17,12 @@
         <!-- Latest 5 articles section -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold">{{ t('articles.latest') }}</h2>
+            <h2 class="text-2xl font-bold">Derniers articles</h2>
             <RouterLink
                 to="/articles"
                 class="text-primary hover:underline flex items-center gap-1 text-sm font-medium"
             >
-              {{ t('articles.viewAll') }}
+              Voir tout
               <ArrowRight class="h-4 w-4" />
             </RouterLink>
           </div>
@@ -78,7 +78,7 @@
             <Card class="p-8">
               <div class="text-muted-foreground">
                 <Calendar class="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{{ t('articles.noArticles') }}</p>
+                <p>Aucun article disponible</p>
               </div>
             </Card>
           </div>
@@ -148,45 +148,6 @@
       </div>
     </div>
 
-    <!-- Features section -->
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <Card class="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <div class="p-2 bg-primary/10 rounded-lg">
-              <Gamepad2 class="h-5 w-5 text-primary" />
-            </div>
-            {{ t('home.features.feature1.title') }}
-          </CardTitle>
-          <CardDescription>{{ t('home.features.feature1.description') }}</CardDescription>
-        </CardHeader>
-      </Card>
-
-      <Card class="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <div class="p-2 bg-primary/10 rounded-lg">
-              <Users class="h-5 w-5 text-primary" />
-            </div>
-            {{ t('home.features.feature2.title') }}
-          </CardTitle>
-          <CardDescription>{{ t('home.features.feature2.description') }}</CardDescription>
-        </CardHeader>
-      </Card>
-
-      <Card class="hover:shadow-lg transition-shadow">
-        <CardHeader>
-          <CardTitle class="flex items-center gap-2">
-            <div class="p-2 bg-primary/10 rounded-lg">
-              <Trophy class="h-5 w-5 text-primary" />
-            </div>
-            {{ t('home.features.feature3.title') }}
-          </CardTitle>
-          <CardDescription>{{ t('home.features.feature3.description') }}</CardDescription>
-        </CardHeader>
-      </Card>
-    </div>
-
     <!-- Video Games Records Banner -->
     <VgrBanner />
   </div>
@@ -195,10 +156,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useI18n } from '@/i18n'
 import {
   Card,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardContent,
@@ -206,17 +165,12 @@ import {
 import {
   Calendar,
   ArrowRight,
-  ExternalLink,
-  Gamepad2,
-  Users,
-  Trophy
+  ExternalLink
 } from 'lucide-vue-next'
 import articleService, { type Article } from '@/services/article.service'
 import Spinner from '@/components/ui/Spinner.vue'
 import toastService from '@/services/toast.service'
 import VgrBanner from '@/components/ui/VgrBanner.vue'
-
-const { t, locale } = useI18n()
 
 // Articles state
 const articles = ref<Article[]>([])
@@ -226,7 +180,7 @@ const articlesLoading = ref(false)
  * Format date according to locale
  */
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -242,7 +196,7 @@ const fetchLatestArticles = async () => {
     articles.value = await articleService.getLatestArticles(5)
   } catch (error) {
     console.error('Failed to fetch articles:', error)
-    toastService.error(t('articles.error.title'), t('articles.error.loadFailed'))
+    toastService.error('Erreur', 'Échec du chargement des articles')
   } finally {
     articlesLoading.value = false
   }

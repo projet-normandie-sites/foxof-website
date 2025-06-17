@@ -1,23 +1,20 @@
-// src/components/article/LatestArticles.vue
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, ArrowRight } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import articleService, { type Article } from '@/services/article.service'
 import Spinner from '@/components/ui/Spinner.vue'
 import toastService from '@/services/toast.service'
 
 const articles = ref<Article[]>([])
 const loading = ref(false)
-const { t, locale } = useI18n()
 
 /**
- * Format date for display based on locale
+ * Format date for display in French
  */
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -33,7 +30,7 @@ const fetchLatestArticles = async () => {
     articles.value = await articleService.getLatestArticles(5)
   } catch (error) {
     console.error('Failed to fetch articles:', error)
-    toastService.error(t('articles.error.title'), t('articles.error.loadFailed'))
+    toastService.error('Erreur', 'Échec du chargement des articles')
   } finally {
     loading.value = false
   }
@@ -47,12 +44,12 @@ onMounted(() => {
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-2xl font-bold">{{ t('articles.latest') }}</h2>
+      <h2 class="text-2xl font-bold">Derniers Articles</h2>
       <RouterLink
           to="/articles"
           class="text-primary hover:underline flex items-center gap-1"
       >
-        {{ t('articles.viewAll') }}
+        Voir tout
         <ArrowRight class="h-4 w-4" />
       </RouterLink>
     </div>
@@ -100,7 +97,7 @@ onMounted(() => {
 
     <!-- Empty state -->
     <div v-else class="text-center py-8">
-      <p class="text-muted-foreground">{{ t('articles.noArticles') }}</p>
+      <p class="text-muted-foreground">Aucun article disponible</p>
     </div>
   </div>
 </template>

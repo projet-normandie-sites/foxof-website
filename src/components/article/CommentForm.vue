@@ -6,7 +6,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { QuillEditor } from '@/components/ui/editor'
 import { toolbarConfigs } from '@/components/ui/editor'
 import { useAuthStore } from '@/stores/auth'
-import { useI18n } from '@/i18n'
 import toastService from '@/services/toast.service'
 import commentService, { type CommentFormData } from '@/services/comment.service'
 import Spinner from '@/components/ui/Spinner.vue'
@@ -42,7 +41,6 @@ const emit = defineEmits<{
 
 // Get auth store to check if user is logged in
 const authStore = useAuthStore()
-const { t } = useI18n()
 
 // Form state
 const content = ref('')
@@ -127,8 +125,8 @@ const handleSubmit = async () => {
 
     // Show success notification
     toastService.success(
-        t('comments.success.title'),
-        t('comments.success.added')
+        'Succès',
+        'Votre commentaire a été publié.'
     )
 
     // Emit event to parent
@@ -137,11 +135,11 @@ const handleSubmit = async () => {
     console.error('Error submitting comment:', err)
 
     const apiError = err as ApiError
-    error.value = apiError.response?.data?.message || t('comments.error.default')
+    error.value = apiError.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer.'
 
     // Show error notification
     toastService.error(
-        t('comments.error.title'),
+        'Erreur',
         error.value
     )
   } finally {
@@ -174,13 +172,13 @@ const clearContent = () => {
       <!-- Header -->
       <div class="flex items-center gap-2 mb-4">
         <MessageSquare class="h-5 w-5 text-primary" />
-        <h3 class="font-medium">{{ t('comments.form.title') }}</h3>
+        <h3 class="font-medium">Ajouter un commentaire</h3>
       </div>
 
       <!-- Not logged in message -->
       <div v-if="!isAuthenticated" class="flex items-center gap-2 text-sm p-3 bg-amber-50 text-amber-700 rounded-md mb-4">
         <AlertCircle class="h-5 w-5 flex-shrink-0" />
-        <p>{{ t('comments.loginRequired') }} <RouterLink to="/login" class="font-medium underline">{{ t('comments.loginLink') }}</RouterLink></p>
+        <p>Vous devez être connecté pour poster un commentaire. <RouterLink to="/login" class="font-medium underline">Se connecter</RouterLink></p>
       </div>
 
       <!-- Error message -->
@@ -193,15 +191,15 @@ const clearContent = () => {
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium mb-2">
-            {{ t('comments.form.content') }}
+            Votre commentaire
             <span class="text-red-500 ml-1">*</span>
           </label>
 
           <!-- Character count and validation info -->
           <div class="flex justify-between items-center text-xs text-muted-foreground mb-2">
-            <span>{{ t('comments.form.minCharacters') }}</span>
+            <span>Minimum 3 caractères requis</span>
             <span :class="{ 'text-red-500': characterCount > 0 && characterCount < 3 }">
-              {{ characterCount }} {{ t('comments.form.characters') }}
+              {{ characterCount }} caractères
             </span>
           </div>
 
@@ -209,7 +207,7 @@ const clearContent = () => {
           <QuillEditor
               ref="editorRef"
               v-model="content"
-              :placeholder="t('comments.form.placeholder')"
+              placeholder="Partagez votre avis sur cet article..."
               :toolbar="toolbarConfigs.basic"
               height="200px"
               :read-only="!isAuthenticated"
@@ -219,7 +217,7 @@ const clearContent = () => {
 
           <!-- Helper text -->
           <p class="text-xs text-muted-foreground mt-2">
-            {{ t('comments.form.helpText') }}
+            Vous pouvez utiliser la mise en forme de base : gras, italique, listes et liens.
           </p>
         </div>
       </div>
@@ -235,7 +233,7 @@ const clearContent = () => {
           :disabled="isSubmitting"
           class="text-muted-foreground hover:text-foreground"
       >
-        {{ t('comments.form.clear') }}
+        Effacer
       </Button>
       <div v-else></div>
 
@@ -247,11 +245,11 @@ const clearContent = () => {
       >
         <template v-if="isSubmitting">
           <Spinner color="text-white" size="sm" :mr="true" />
-          {{ t('comments.form.submitting') }}
+          Envoi en cours...
         </template>
         <template v-else>
           <MessageSquare class="h-4 w-4 mr-2" />
-          {{ t('comments.form.submit') }}
+          Poster le commentaire
         </template>
       </Button>
     </CardFooter>

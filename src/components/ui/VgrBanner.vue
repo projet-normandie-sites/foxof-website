@@ -33,7 +33,7 @@
             <!-- Call-to-action buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
               <a
-                  href="https://www.videogamesrecords.com"
+                  href="https://www.videogamesrecords.net"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center justify-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors"
@@ -43,7 +43,7 @@
               </a>
 
               <a
-                  href="https://www.videogamesrecords.com/register"
+                  href="https://www.videogamesrecords.net/fr/register"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="inline-flex items-center justify-center gap-2 bg-white/20 text-white px-6 py-3 rounded-lg font-medium hover:bg-white/30 transition-colors backdrop-blur-sm"

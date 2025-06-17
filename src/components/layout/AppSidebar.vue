@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import { Home, HelpCircle, Shield, Eye, FileText, Mail, Heart, Scale} from "lucide-vue-next"
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useI18n } from '@/i18n'
 import { useSidebar } from '@/components/ui/sidebar'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { watch } from 'vue'
 
-const { t } = useI18n()
 const { setOpenMobile } = useSidebar()
 const router = useRouter()
 
@@ -24,7 +22,7 @@ const router = useRouter()
  * This handles cases where navigation happens programmatically
  */
 watch(() => router.currentRoute.value.path, () => {
-    setOpenMobile(false)
+  setOpenMobile(false)
 })
 </script>
 
@@ -32,14 +30,14 @@ watch(() => router.currentRoute.value.path, () => {
   <Sidebar>
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>{{ t('layout.sidebar.title') }}</SidebarGroupLabel>
+        <SidebarGroupLabel>Navigation</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <RouterLink to="/">
                   <Home />
-                  <span>{{ t('menu.home') }}</span>
+                  <span>Accueil</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -49,7 +47,7 @@ watch(() => router.currentRoute.value.path, () => {
 
       <!-- Section Liens utiles -->
       <SidebarGroup class="mt-6">
-        <SidebarGroupLabel>{{ t('layout.sidebar.links.title') }}</SidebarGroupLabel>
+        <SidebarGroupLabel>Liens utiles</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -64,7 +62,7 @@ watch(() => router.currentRoute.value.path, () => {
               <SidebarMenuButton asChild>
                 <RouterLink to="/rules">
                   <Shield />
-                  <span>Rules</span>
+                  <span>Règlement</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -72,7 +70,7 @@ watch(() => router.currentRoute.value.path, () => {
               <SidebarMenuButton asChild>
                 <RouterLink to="/privacy">
                   <Eye />
-                  <span>Privacy</span>
+                  <span>Confidentialité</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -80,7 +78,7 @@ watch(() => router.currentRoute.value.path, () => {
               <SidebarMenuButton asChild>
                 <RouterLink to="/terms">
                   <FileText />
-                  <span>Terms</span>
+                  <span>Conditions d'utilisation</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -96,7 +94,7 @@ watch(() => router.currentRoute.value.path, () => {
               <SidebarMenuButton asChild>
                 <RouterLink to="/about">
                   <Heart />
-                  <span>About</span>
+                  <span>À propos</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -104,7 +102,7 @@ watch(() => router.currentRoute.value.path, () => {
               <SidebarMenuButton asChild>
                 <RouterLink to="/legal">
                   <Scale />
-                  <span>Legal</span>
+                  <span>Mentions légales</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>

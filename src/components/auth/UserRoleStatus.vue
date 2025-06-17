@@ -1,77 +1,75 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import RoleAwareContent from './RoleAwareContent.vue';
-import * as authUtils from '@/utils/auth.utils';
-import { useI18n } from '@/i18n';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import RoleAwareContent from './RoleAwareContent.vue'
+import * as authUtils from '@/utils/auth.utils'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
-const authStore = useAuthStore();
-const { t } = useI18n();
+const authStore = useAuthStore()
 
 /**
  * Get main roles for display with appropriate styling
  */
 const mainRoles = computed(() => {
-  const roles = [];
+  const roles = []
 
   if (authUtils.isSuperAdmin()) roles.push({
     key: 'super-admin',
     label: 'Super Admin',
     variant: 'destructive'
-  });
+  })
 
   if (authUtils.isAdmin()) roles.push({
     key: 'admin',
     label: 'Admin',
     variant: 'default'
-  });
+  })
 
-  return roles;
-});
+  return roles
+})
 
 /**
  * Get all user roles
  */
 const allRoles = computed(() => {
-  if (!authStore.user || !authStore.user.roles) return [];
-  return authStore.user.roles;
-});
+  if (!authStore.user || !authStore.user.roles) return []
+  return authStore.user.roles
+})
 
 /**
  * Count roles by category
  */
 const roleCategories = computed(() => {
-  if (!authStore.user || !authStore.user.roles) return {};
+  if (!authStore.user || !authStore.user.roles) return {}
 
   const categories = {
     admin: 0,
     sonata: 0,
     vgr: 0,
     other: 0
-  };
+  }
 
   allRoles.value.forEach(role => {
     if (role.includes('ROLE_SONATA')) {
-      categories.sonata++;
+      categories.sonata++
     } else if (role.includes('ROLE_VGR')) {
-      categories.vgr++;
+      categories.vgr++
     } else if (['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'].includes(role)) {
-      categories.admin++;
+      categories.admin++
     } else {
-      categories.other++;
+      categories.other++
     }
-  });
+  })
 
-  return categories;
-});
+  return categories
+})
 </script>
 
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>{{ t('auth.profile.status.title') }}</CardTitle>
+      <CardTitle>Statut de l'utilisateur</CardTitle>
     </CardHeader>
 
     <CardContent>
@@ -101,22 +99,22 @@ const roleCategories = computed(() => {
 
         <!-- Roles section -->
         <div class="border-t pt-3 mt-3">
-          <p class="text-sm text-muted-foreground mb-2">{{ t('auth.profile.roles.categories.title') }}</p>
+          <p class="text-sm text-muted-foreground mb-2">Catégories de rôles</p>
           <div class="grid grid-cols-2 gap-2">
             <div class="bg-secondary/10 p-2 rounded flex items-center justify-between">
-              <span class="text-xs">{{ t('auth.profile.roles.categories.admin') }}</span>
+              <span class="text-xs">Admin</span>
               <Badge variant="outline" class="text-xs">{{ roleCategories.admin }}</Badge>
             </div>
             <div class="bg-secondary/10 p-2 rounded flex items-center justify-between">
-              <span class="text-xs">{{ t('auth.profile.roles.categories.sonata') }}</span>
+              <span class="text-xs">Sonata</span>
               <Badge variant="outline" class="text-xs">{{ roleCategories.sonata }}</Badge>
             </div>
             <div class="bg-secondary/10 p-2 rounded flex items-center justify-between">
-              <span class="text-xs">{{ t('auth.profile.roles.categories.vgr') }}</span>
+              <span class="text-xs">VGR</span>
               <Badge variant="outline" class="text-xs">{{ roleCategories.vgr }}</Badge>
             </div>
             <div class="bg-secondary/10 p-2 rounded flex items-center justify-between">
-              <span class="text-xs">{{ t('auth.profile.roles.categories.other') }}</span>
+              <span class="text-xs">Autres</span>
               <Badge variant="outline" class="text-xs">{{ roleCategories.other }}</Badge>
             </div>
           </div>
@@ -125,13 +123,13 @@ const roleCategories = computed(() => {
         <!-- Admin-only actions -->
         <RoleAwareContent required-role="ROLE_ADMIN" class="mt-4">
           <div class="border-t pt-3">
-            <h4 class="text-sm font-medium mb-2">{{ t('auth.profile.roles.adminActions') }}</h4>
+            <h4 class="text-sm font-medium mb-2">Actions administrateur</h4>
             <div class="grid grid-cols-2 gap-2">
               <button class="text-xs bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded">
-                {{ t('auth.profile.roles.manageUsers') }}
+                Gérer les utilisateurs
               </button>
               <button class="text-xs bg-primary/10 hover:bg-primary/20 text-primary p-2 rounded">
-                {{ t('auth.profile.roles.viewStatistics') }}
+                Voir les statistiques
               </button>
             </div>
           </div>
@@ -140,13 +138,13 @@ const roleCategories = computed(() => {
         <!-- Super admin-only actions -->
         <RoleAwareContent required-role="ROLE_SUPER_ADMIN" class="mt-4">
           <div class="border-t pt-3">
-            <h4 class="text-sm font-medium mb-2">{{ t('auth.profile.roles.superAdminActions') }}</h4>
+            <h4 class="text-sm font-medium mb-2">Actions super administrateur</h4>
             <div class="grid grid-cols-2 gap-2">
               <button class="text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive p-2 rounded">
-                {{ t('auth.profile.roles.systemConfig') }}
+                Configuration système
               </button>
               <button class="text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive p-2 rounded">
-                {{ t('auth.profile.roles.roleManagement') }}
+                Gestion des rôles
               </button>
             </div>
           </div>
@@ -154,7 +152,7 @@ const roleCategories = computed(() => {
       </div>
 
       <div v-else class="text-center py-4">
-        <p class="text-muted-foreground text-sm">{{ t('auth.profile.status.guest') }}</p>
+        <p class="text-muted-foreground text-sm">Connectez-vous pour voir votre statut</p>
       </div>
     </CardContent>
   </Card>

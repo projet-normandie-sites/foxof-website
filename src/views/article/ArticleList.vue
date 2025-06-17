@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calendar, Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import articleService, { type Article } from '@/services/article.service'
 import Spinner from '@/components/ui/Spinner.vue'
 import toastService from '@/services/toast.service'
@@ -18,7 +17,6 @@ import toastService from '@/services/toast.service'
 
 const route = useRoute()
 const router = useRouter()
-const { t, locale } = useI18n()
 
 // Component state
 const articles = ref<Article[]>([])
@@ -38,7 +36,7 @@ const maxVisiblePages = 5
  * Format date for display based on locale
  */
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -85,10 +83,10 @@ const hasNextPage = computed(() => {
  * Sort options for the dropdown
  */
 const sortOptions = [
-  { value: 'publishedAt:desc', label: t('articles.sort.newest') },
-  { value: 'publishedAt:asc', label: t('articles.sort.oldest') },
-  { value: 'title:asc', label: t('articles.sort.titleAZ') },
-  { value: 'title:desc', label: t('articles.sort.titleZA') }
+  { value: 'publishedAt:desc', label: 'Plus récents' },
+  { value: 'publishedAt:asc', label: 'Plus anciens' },
+  { value: 'title:asc', label: 'Titre A-Z' },
+  { value: 'title:desc', label: 'Titre Z-A' }
 ]
 
 /**
@@ -121,8 +119,8 @@ const loadArticles = async () => {
     totalItems.value = response['hydra:totalItems']
   } catch (err) {
     console.error('Failed to load articles:', err)
-    error.value = t('articles.error.loadFailed')
-    toastService.error(t('articles.error.title'), error.value)
+    error.value = 'Échec du chargement des articles'
+    toastService.error('Erreur', error.value)
   } finally {
     loading.value = false
   }
@@ -234,9 +232,9 @@ onMounted(() => {
   <div class="container mx-auto max-w-7xl px-4 py-8">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold mb-2">{{ t('articles.list.title') }}</h1>
+      <h1 class="text-3xl font-bold mb-2">Articles</h1>
       <p class="text-muted-foreground">
-        {{ t('articles.list.subtitle') }}
+        Découvrez tous nos articles et contenus
       </p>
     </div>
 
@@ -250,7 +248,7 @@ onMounted(() => {
               <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                   v-model="searchQuery"
-                  :placeholder="t('articles.list.searchPlaceholder')"
+                  placeholder="Rechercher un article..."
                   class="pl-10"
                   @keyup.enter="handleSearch"
               />
@@ -264,7 +262,7 @@ onMounted(() => {
                 @update:value="handleSortChange"
             >
               <SelectTrigger>
-                <SelectValue :placeholder="t('articles.list.sortBy')" />
+                <SelectValue placeholder="Trier par" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem
@@ -285,7 +283,7 @@ onMounted(() => {
                 @update:value="handleItemsPerPageChange"
             >
               <SelectTrigger>
-                <SelectValue :placeholder="t('articles.list.itemsPerPage')" />
+                <SelectValue placeholder="Articles par page" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem
@@ -293,7 +291,7 @@ onMounted(() => {
                     :key="option.value"
                     :value="option.value.toString()"
                 >
-                  {{ option.label }} {{ t('articles.list.perPage') }}
+                  {{ option.label }} par page
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -303,20 +301,16 @@ onMounted(() => {
         <!-- Filter actions -->
         <div class="flex justify-between items-center mt-4">
           <div class="text-sm text-muted-foreground">
-            {{ t('articles.list.showing', {
-            start: Math.min((currentPage - 1) * itemsPerPage + 1, totalItems),
-            end: Math.min(currentPage * itemsPerPage, totalItems),
-            total: totalItems
-          }) }}
+            Affichage de {{ Math.min((currentPage - 1) * itemsPerPage + 1, totalItems) }} à {{ Math.min(currentPage * itemsPerPage, totalItems) }} sur {{ totalItems }} résultats
           </div>
 
           <div class="flex gap-2">
             <Button variant="outline" size="sm" @click="handleSearch">
               <Search class="h-4 w-4 mr-2" />
-              {{ t('articles.list.search') }}
+              Rechercher
             </Button>
             <Button variant="ghost" size="sm" @click="clearFilters">
-              {{ t('articles.list.clearFilters') }}
+              Effacer les filtres
             </Button>
           </div>
         </div>
@@ -332,10 +326,10 @@ onMounted(() => {
     <div v-else-if="error" class="text-center py-12">
       <Card>
         <CardContent class="p-8">
-          <h2 class="text-xl font-semibold mb-2 text-destructive">{{ t('articles.error.title') }}</h2>
+          <h2 class="text-xl font-semibold mb-2 text-destructive">Erreur</h2>
           <p class="text-muted-foreground mb-4">{{ error }}</p>
           <Button @click="loadArticles">
-            {{ t('articles.list.retry') }}
+            Réessayer
           </Button>
         </CardContent>
       </Card>
@@ -345,12 +339,12 @@ onMounted(() => {
     <div v-else-if="!articles.length" class="text-center py-12">
       <Card>
         <CardContent class="p-8">
-          <h2 class="text-xl font-semibold mb-2">{{ t('articles.list.noResults') }}</h2>
+          <h2 class="text-xl font-semibold mb-2">Aucun résultat</h2>
           <p class="text-muted-foreground mb-4">
-            {{ searchQuery ? t('articles.list.noResultsSearch') : t('articles.list.noArticles') }}
+            {{ searchQuery ? 'Aucun article trouvé pour cette recherche' : 'Aucun article disponible' }}
           </p>
           <Button v-if="searchQuery" @click="clearFilters">
-            {{ t('articles.list.clearFilters') }}
+            Effacer les filtres
           </Button>
         </CardContent>
       </Card>
@@ -396,7 +390,7 @@ onMounted(() => {
 
               <!-- Read more link -->
               <div class="flex items-center text-primary text-sm font-medium">
-                <span>{{ t('articles.list.readMore') }}</span>
+                <span>Lire la suite</span>
                 <ArrowRight class="h-4 w-4 ml-1" />
               </div>
             </CardContent>
@@ -415,7 +409,7 @@ onMounted(() => {
               @click="goToPage(currentPage - 1)"
           >
             <ChevronLeft class="h-4 w-4" />
-            {{ t('articles.list.previous') }}
+            Précédent
           </Button>
 
           <!-- First page -->
@@ -466,7 +460,7 @@ onMounted(() => {
               :disabled="!hasNextPage"
               @click="goToPage(currentPage + 1)"
           >
-            {{ t('articles.list.next') }}
+            Suivant
             <ChevronRight class="h-4 w-4" />
           </Button>
         </nav>
@@ -474,7 +468,7 @@ onMounted(() => {
 
       <!-- Pagination info -->
       <div class="text-center text-sm text-muted-foreground">
-        {{ t('articles.list.pageInfo', { current: currentPage, total: totalPages }) }}
+        Page {{ currentPage }} sur {{ totalPages }}
       </div>
     </div>
   </div>

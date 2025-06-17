@@ -1,7 +1,6 @@
-// src/components/auth/ForgotPasswordForm.vue
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,11 +12,10 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { Mail, AlertCircle, ArrowLeft } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import Spinner from '@/components/ui/Spinner.vue'
 import forgotPasswordService from '@/services/forgot-password.service'
 import toastService from '@/services/toast.service'
-import type {ApiError} from "@/types";
+import type { ApiError } from "@/types"
 
 /**
  * ForgotPasswordForm component using Shadcn Card UI
@@ -29,7 +27,6 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const success = ref(false)
 const router = useRouter()
-const { t } = useI18n()
 
 /**
  * Validate email format
@@ -52,7 +49,7 @@ const isFormValid = computed(() => {
  */
 const handleSubmit = async () => {
   if (!isFormValid.value) {
-    error.value = t('auth.forgotPassword.error.noEmail')
+    error.value = 'Veuillez entrer une adresse email valide'
     return
   }
 
@@ -60,14 +57,17 @@ const handleSubmit = async () => {
   error.value = null
 
   try {
-    await forgotPasswordService.sendPasswordResetLink({ email: email.value, callBackUrl: '/reset-password?token=[token]' })
+    await forgotPasswordService.sendPasswordResetLink({
+      email: email.value,
+      callBackUrl: '/reset-password?token=[token]'
+    })
 
     success.value = true
 
     // Show success notification
     toastService.success(
-        t('auth.forgotPassword.success.title'),
-        t('auth.forgotPassword.success.description')
+        'Lien envoyé',
+        'Un email de réinitialisation a été envoyé à votre adresse'
     )
 
     // Redirect to login after 3 seconds
@@ -76,12 +76,12 @@ const handleSubmit = async () => {
     }, 3000)
 
   } catch (err: unknown) {
-    const apiError = err as ApiError;
-    error.value = apiError.response?.data?.message || t('auth.forgotPassword.error.default')
+    const apiError = err as ApiError
+    error.value = apiError.response?.data?.message || 'Une erreur est survenue lors de l\'envoi du lien de réinitialisation'
 
     // Show error notification
     toastService.error(
-        t('auth.forgotPassword.error.title'),
+        'Erreur',
         error.value
     )
   } finally {
@@ -93,9 +93,11 @@ const handleSubmit = async () => {
 <template>
   <Card class="w-full max-w-md mx-auto">
     <CardHeader>
-      <CardTitle class="text-2xl font-bold text-center">{{ t('auth.forgotPassword.title') }}</CardTitle>
+      <CardTitle class="text-2xl font-bold text-center">
+        Mot de passe oublié
+      </CardTitle>
       <CardDescription class="text-center">
-        {{ t('auth.forgotPassword.subtitle') }}
+        Entrez votre adresse email pour recevoir un lien de réinitialisation
       </CardDescription>
     </CardHeader>
 
@@ -109,7 +111,9 @@ const handleSubmit = async () => {
 
         <!-- Email field -->
         <div class="space-y-2">
-          <label for="email" class="text-sm font-medium">{{ t('auth.forgotPassword.email') }}</label>
+          <label for="email" class="text-sm font-medium">
+            Adresse email
+          </label>
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
               <Mail class="h-5 w-5" />
@@ -118,7 +122,7 @@ const handleSubmit = async () => {
                 id="email"
                 type="email"
                 v-model="email"
-                :placeholder="t('auth.forgotPassword.enterEmail')"
+                placeholder="Entrez votre adresse email"
                 class="pl-10"
                 :disabled="loading"
                 :class="{ 'border-red-500': email && !isEmailValid }"
@@ -126,7 +130,7 @@ const handleSubmit = async () => {
             />
           </div>
           <p v-if="email && !isEmailValid" class="text-sm text-red-500">
-            {{ t('auth.register.validation.email') }}
+            Veuillez entrer une adresse email valide
           </p>
         </div>
 
@@ -138,10 +142,10 @@ const handleSubmit = async () => {
         >
           <template v-if="loading">
             <Spinner color="text-white" size="md" :mr="true" />
-            {{ t('auth.forgotPassword.sendingLink') }}
+            Envoi en cours...
           </template>
           <template v-else>
-            {{ t('auth.forgotPassword.sendResetLink') }}
+            Envoyer le lien de réinitialisation
           </template>
         </Button>
       </form>
@@ -153,15 +157,22 @@ const handleSubmit = async () => {
             <Mail class="h-6 w-6 text-green-600" />
           </div>
         </div>
-        <h3 class="text-lg font-medium mb-2">{{ t('auth.forgotPassword.success.title') }}</h3>
-        <p class="text-sm text-muted-foreground">{{ t('auth.forgotPassword.success.description') }}</p>
+        <h3 class="text-lg font-medium mb-2">
+          Email envoyé !
+        </h3>
+        <p class="text-sm text-muted-foreground">
+          Vérifiez votre boîte email et cliquez sur le lien pour réinitialiser votre mot de passe
+        </p>
+        <p class="text-xs text-muted-foreground mt-2">
+          Redirection vers la connexion dans quelques secondes...
+        </p>
       </div>
     </CardContent>
 
     <CardFooter class="flex justify-center">
       <RouterLink to="/login" class="text-primary hover:underline text-sm flex items-center gap-2">
         <ArrowLeft class="h-4 w-4" />
-        {{ t('auth.forgotPassword.backToLogin') }}
+        Retour à la connexion
       </RouterLink>
     </CardFooter>
   </Card>

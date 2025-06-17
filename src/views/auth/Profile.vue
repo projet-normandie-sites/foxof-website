@@ -1,8 +1,6 @@
-// src/views/Profile.vue
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { useI18n } from '@/i18n';
+import { useAuthStore } from '@/stores/auth.ts';
 import {
   Card,
   CardContent,
@@ -21,9 +19,8 @@ import ProfilePasswordTab from '@/components/profile/ProfilePasswordTab.vue';
 import UserRoleStatus from '@/components/auth/UserRoleStatus.vue';
 import UserAvatar from '@/components/user/UserAvatar.vue';
 
-// Get stores and translations
+// Get stores
 const authStore = useAuthStore();
-const { t } = useI18n();
 
 // Current active tab/accordionItem
 const activeTab = ref('info');
@@ -40,7 +37,7 @@ const handleResize = () => {
 
 // Computed property to format token expiration date
 const tokenExpirationDate = computed(() => {
-  if (!authStore.tokenExpiration) return t('auth.token.status.unavailable');
+  if (!authStore.tokenExpiration) return 'Non disponible';
 
   const date = new Date(authStore.tokenExpiration * 1000);
   return date.toLocaleString();
@@ -98,8 +95,8 @@ onUnmounted(() => {
   <div>
     <div class="mb-6 flex justify-between items-center">
       <div>
-        <h1 class="text-2xl font-bold">{{ t('profile.title') }}</h1>
-        <p class="text-gray-500">{{ t('profile.subtitle') }}</p>
+        <h1 class="text-2xl font-bold">Profil</h1>
+        <p class="text-gray-500">Gérez vos informations personnelles et vos paramètres de compte</p>
       </div>
       <UserAvatar size="lg" bordered />
     </div>
@@ -121,7 +118,7 @@ onUnmounted(() => {
                   <AccordionTrigger>
                     <div class="flex items-center gap-2">
                       <User class="h-4 w-4" />
-                      {{ t('profile.tabs.info') }}
+                      Informations personnelles
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -133,11 +130,11 @@ onUnmounted(() => {
                   <AccordionTrigger>
                     <div class="flex items-center gap-2">
                       <Upload class="h-4 w-4" />
-                      {{ t('profile.tabs.avatar') }}
+                      Photo de profil
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <ProfileAvatarTab @avatar-updated="handleProfileUpdate" />
+                    <ProfileAvatarTab />
                   </AccordionContent>
                 </AccordionItem>
 
@@ -145,7 +142,7 @@ onUnmounted(() => {
                   <AccordionTrigger>
                     <div class="flex items-center gap-2">
                       <KeyRound class="h-4 w-4" />
-                      {{ t('profile.tabs.password') }}
+                      Mot de passe
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -155,59 +152,65 @@ onUnmounted(() => {
               </Accordion>
             </div>
 
-            <!-- Desktop: Regular tabs -->
-            <Tabs
-                v-else
-                :value="activeTab"
-                @update:value="handleTabChange"
-                class="w-full"
-            >
-              <TabsList class="grid w-full grid-cols-3 mb-6">
-                <TabsTrigger value="info">
-                  <User class="mr-2 h-4 w-4" />
-                  {{ t('profile.tabs.info') }}
-                </TabsTrigger>
-                <TabsTrigger value="avatar">
-                  <Upload class="mr-2 h-4 w-4" />
-                  {{ t('profile.tabs.avatar') }}
-                </TabsTrigger>
-                <TabsTrigger value="password">
-                  <KeyRound class="mr-2 h-4 w-4" />
-                  {{ t('profile.tabs.password') }}
-                </TabsTrigger>
-              </TabsList>
+            <!-- Desktop: Tabs interface -->
+            <div v-else>
+              <Tabs :value="activeTab" @update:value="handleTabChange">
+                <TabsList class="grid grid-cols-3 w-full">
+                  <TabsTrigger value="info" class="flex items-center gap-2">
+                    <User class="h-4 w-4" />
+                    Informations personnelles
+                  </TabsTrigger>
+                  <TabsTrigger value="avatar" class="flex items-center gap-2">
+                    <Upload class="h-4 w-4" />
+                    Photo de profil
+                  </TabsTrigger>
+                  <TabsTrigger value="password" class="flex items-center gap-2">
+                    <KeyRound class="h-4 w-4" />
+                    Mot de passe
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="info" class="mt-0">
-                <ProfileInfoTab @profile-updated="handleProfileUpdate" />
-              </TabsContent>
+                <div class="mt-6">
+                  <TabsContent value="info" class="space-y-0">
+                    <ProfileInfoTab @profile-updated="handleProfileUpdate" />
+                  </TabsContent>
 
-              <TabsContent value="avatar" class="mt-0">
-                <ProfileAvatarTab @avatar-updated="handleProfileUpdate" />
-              </TabsContent>
+                  <TabsContent value="avatar" class="space-y-0">
+                    <ProfileAvatarTab />
+                  </TabsContent>
 
-              <TabsContent value="password" class="mt-0">
-                <ProfilePasswordTab />
-              </TabsContent>
-            </Tabs>
+                  <TabsContent value="password" class="space-y-0">
+                    <ProfilePasswordTab />
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      <!-- Sidebar -->
-      <div class="lg:col-span-1 space-y-6">
-        <UserRoleStatus />
+      <!-- Sidebar/Right column -->
+      <div class="space-y-6">
+        <!-- User status card -->
+        <UserRoleStatus :user="authStore.user" />
 
+        <!-- Session information -->
         <Card>
           <CardContent class="pt-6">
-            <div class="flex flex-col space-y-1 mb-4">
-              <h3 class="font-medium">{{ t('profile.authentication.title') }}</h3>
-
-              <div class="flex items-center gap-2">
-                <span class="h-3 w-3 rounded-full" :class="isTokenExpired ? 'bg-red-500' : 'bg-green-500'"></span>
-                <span class="text-sm whitespace-nowrap">
-                  {{ isTokenExpired ? t('auth.token.status.expired') : t('auth.token.status.valid') }}
+            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+              <KeyRound class="h-5 w-5" />
+              Informations de session
+            </h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between items-center">
+                <span class="text-muted-foreground">Statut du token :</span>
+                <span :class="isTokenExpired ? 'text-red-600' : 'text-green-600'">
+                  {{ isTokenExpired ? 'Expiré' : 'Actif' }}
                 </span>
-                <span class="text-xs text-muted-foreground whitespace-nowrap">{{ tokenExpirationDate }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-muted-foreground">Expiration :</span>
+                <span>{{ tokenExpirationDate }}</span>
               </div>
             </div>
           </CardContent>

@@ -1,11 +1,9 @@
-// src/views/article/ArticleDetail.vue
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar, ArrowLeft } from 'lucide-vue-next'
-import { useI18n } from '@/i18n'
 import articleService, { type Article } from '@/services/article.service'
 import Spinner from '@/components/ui/Spinner.vue'
 import toastService from '@/services/toast.service'
@@ -15,13 +13,12 @@ import CommentList from '@/components/article/CommentList.vue'
 const route = useRoute()
 const article = ref<Article | null>(null)
 const loading = ref(false)
-const { t, locale } = useI18n()
 
 /**
- * Format date for display based on locale
+ * Format date for display in French
  */
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+  return new Date(dateString).toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
@@ -34,11 +31,11 @@ const formatDate = (dateString: string) => {
 const handleCommentAdded = () => {
   // Refresh comments
   if (commentListRef.value && typeof commentListRef.value.loadComments === 'function') {
-    console.log('Refreshing comment list...');
+    console.log('Actualisation de la liste des commentaires...')
 
-    commentListRef.value.loadComments(1, true);
+    commentListRef.value.loadComments(1, true)
   } else {
-    console.warn('CommentList reference or loadComments method not available');
+    console.warn('Référence CommentList ou méthode loadComments non disponible')
   }
 }
 
@@ -52,18 +49,18 @@ const fetchArticle = async () => {
   const id = route.params.id as string
 
   if (!id) {
-    toastService.error(t('articles.error.title'), t('articles.error.invalidId'))
-    return Promise.reject(new Error('Invalid article ID'));
+    toastService.error('Erreur', 'ID d\'article invalide')
+    return Promise.reject(new Error('Invalid article ID'))
   }
 
   loading.value = true
   try {
     article.value = await articleService.getArticle(parseInt(id))
-    return article.value;
+    return article.value
   } catch (error) {
-    console.error('Failed to fetch article:', error)
-    toastService.error(t('articles.error.title'), t('articles.error.loadFailed'))
-    return Promise.reject(error);
+    console.error('Échec du chargement de l\'article:', error)
+    toastService.error('Erreur', 'Impossible de charger l\'article')
+    return Promise.reject(error)
   } finally {
     loading.value = false
   }
@@ -73,10 +70,10 @@ onMounted(() => {
   fetchArticle().then(() => {
     setTimeout(() => {
       if (commentListRef.value && typeof commentListRef.value.loadComments === 'function') {
-        commentListRef.value.loadComments(1);
+        commentListRef.value.loadComments(1)
       }
-    }, 100);
-  });
+    }, 100)
+  })
 })
 </script>
 
@@ -88,7 +85,7 @@ onMounted(() => {
         class="inline-flex items-center gap-2 text-primary hover:underline mb-6"
     >
       <ArrowLeft class="h-4 w-4" />
-      {{ t('articles.backToHome') }}
+      Retour à l'accueil
     </RouterLink>
 
     <!-- Loading state -->
@@ -148,13 +145,13 @@ onMounted(() => {
     <div v-else class="text-center py-12">
       <Card>
         <CardContent class="p-8">
-          <h2 class="text-xl font-semibold mb-2">{{ t('articles.notFound.title') }}</h2>
+          <h2 class="text-xl font-semibold mb-2">Article introuvable</h2>
           <p class="text-muted-foreground mb-4">
-            {{ t('articles.notFound.description') }}
+            L'article que vous recherchez n'existe pas ou a été supprimé.
           </p>
           <Button asChild>
             <RouterLink to="/">
-              {{ t('articles.returnToHome') }}
+              Retourner à l'accueil
             </RouterLink>
           </Button>
         </CardContent>

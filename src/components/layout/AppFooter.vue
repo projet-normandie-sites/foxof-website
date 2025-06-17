@@ -1,8 +1,5 @@
-<!-- src/components/layout/AppFooter.vue -->
 <script setup lang="ts">
-import { useI18n } from '@/i18n';
-
-const { t } = useI18n();
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -10,7 +7,7 @@ const { t } = useI18n();
   <footer class="border-t py-4 px-4 sm:px-6 w-full">
     <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
       <!-- Copyright text -->
-      <p>{{ t('layout.footer.copyright') }}</p>
+      <p>© 2025 Foxof. Tous droits réservés.</p>
 
       <!-- Legal links navigation -->
       <nav class="flex flex-wrap items-center justify-center gap-3 md:gap-4">
@@ -19,21 +16,21 @@ const { t } = useI18n();
             to="/legal"
             class="hover:underline hover:text-foreground transition-colors"
         >
-          {{ t('layout.footer.legal') }}
+          Mentions légales
         </RouterLink>
 
         <RouterLink
             to="/privacy"
             class="hover:underline hover:text-foreground transition-colors"
         >
-          {{ t('layout.footer.privacy') }}
+          Confidentialité
         </RouterLink>
 
         <RouterLink
             to="/terms"
             class="hover:underline hover:text-foreground transition-colors"
         >
-          {{ t('layout.footer.terms') }}
+          Conditions d'utilisation
         </RouterLink>
 
         <!-- Important pages -->
@@ -41,14 +38,14 @@ const { t } = useI18n();
             to="/contact"
             class="hover:underline hover:text-foreground transition-colors"
         >
-          {{ t('layout.footer.contact') }}
+          Contact
         </RouterLink>
 
         <RouterLink
             to="/rules"
             class="hover:underline hover:text-foreground transition-colors"
         >
-          {{ t('layout.footer.rules') }}
+          Règlement
         </RouterLink>
 
         <!-- Optional pages -->
@@ -56,7 +53,7 @@ const { t } = useI18n();
             to="/about"
             class="hover:underline hover:text-foreground transition-colors"
         >
-          {{ t('layout.footer.about') }}
+          À propos
         </RouterLink>
       </nav>
     </div>

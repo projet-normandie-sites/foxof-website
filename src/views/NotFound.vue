@@ -1,10 +1,7 @@
-// src/views/NotFound.vue
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-import { useI18n } from '@/i18n'
 import { useRouter } from 'vue-router'
 
-const { t } = useI18n()
 const router = useRouter()
 
 const goBack = () => {
@@ -23,24 +20,24 @@ const goBack = () => {
             </div>
             <div class="absolute inset-0 flex items-center justify-center">
               <span class="text-4xl md:text-5xl font-bold text-primary">
-                {{ t('error.notFound.title') }}
+                Introuvable
               </span>
             </div>
           </div>
         </div>
         <h2 class="text-2xl font-semibold mb-6">
-          {{ t('error.notFound.subtitle') }}
+          Page non trouvée
         </h2>
         <p class="text-muted-foreground mb-8">
-          {{ t('error.notFound.description') }}
+          Désolé, la page que vous recherchez n'existe pas ou a été supprimée. Vérifiez l'URL ou retournez à la page d'accueil.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button @click="goBack" class="cursor-pointer">
-            {{ t('error.notFound.back') }}
+            Retour
           </Button>
           <Button asChild variant="outline">
             <RouterLink to="/">
-              {{ t('error.notFound.home') }}
+              Accueil
             </RouterLink>
           </Button>
         </div>
