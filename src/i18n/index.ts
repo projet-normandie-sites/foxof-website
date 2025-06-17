@@ -20,14 +20,14 @@ export const availableLocales: Record<SupportedLocale, string> = {
 // Get browser language or fallback
 const getBrowserLanguage = (): SupportedLocale => {
     const browserLang = navigator.language.split('-')[0]
-    return (browserLang as SupportedLocale) in availableLocales ? (browserLang as SupportedLocale) : 'en'
+    return (browserLang as SupportedLocale) in availableLocales ? (browserLang as SupportedLocale) : 'fr'
 }
 
 // Create the i18n instance
 const i18n = createI18n({
     legacy: false, // Use Composition API mode
     locale: getBrowserLanguage(),
-    fallbackLocale: 'en',
+    fallbackLocale: 'fr',
     messages: {
         en,
         fr

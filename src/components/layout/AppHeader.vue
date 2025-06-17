@@ -68,7 +68,6 @@ onMounted(() => {
       <div class="flex items-center gap-2">
 
         <!-- Language Selector -->
-        <LanguageSelector />
         <ThemeSwitcher />
 
         <!-- Login link when user is not authenticated -->
