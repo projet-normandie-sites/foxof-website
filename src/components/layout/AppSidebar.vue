@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Home, HelpCircle, Shield, Eye, FileText, Mail, Heart, Scale, Video, TestTube, Smartphone } from "lucide-vue-next"
+import { Home, HelpCircle, Shield, Eye, FileText, Mail, Heart, Scale} from "lucide-vue-next"
 import {
     Sidebar,
     SidebarContent,
