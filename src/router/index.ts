@@ -61,6 +61,11 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/wishlist',
+        name: 'Wishlist',
+        component: () => import(/* webpackChunkName: "faq" */ '@/views/game/GameWishlist.vue'),
+    },
+    {
         path: '/faq',
         name: 'FAQ',
         component: () => import(/* webpackChunkName: "faq" */ '@/views/FAQ.vue'),
